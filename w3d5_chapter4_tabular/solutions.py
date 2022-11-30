@@ -12,7 +12,7 @@ from tqdm import tqdm
 from PIL import Image, ImageDraw
 from fancy_einsum import einsum
 from einops import rearrange
-
+import os
 
 MAIN = __name__ == "__main__"
 Arr = np.ndarray
