@@ -1,3 +1,7 @@
+import os
+
+os.chdir("/Users/jon/ml/arena/arena-v1-ldn-exercises-new")
+
 import numpy as np
 import torch as t
 from typing import Optional, Union
@@ -7,11 +11,29 @@ import gym.envs.registration
 from gym.utils import seeding
 import matplotlib.pyplot as plt
 from tqdm.auto import tqdm
-from w3d5_chapter4_tabular.utils import make_env, set_seed
+from w3d5_chapter4_tabular.utils import set_seed
 from w3d5_chapter4_tabular.solutions import Norvig, policy_eval_exact
-from w4d2_chapter4_dqn import solutions
+import solutions
 from typing import Tuple
 from dataclasses import asdict
+
+t.set_default_dtype(t.float32)
+
+def make_env(env_id: str, seed: int, idx: int, capture_video: bool, run_name: str):
+    """Return a function that returns an environment after setting up boilerplate."""
+    
+    def thunk():
+        env = gym.make(env_id)
+        env = gym.wrappers.RecordEpisodeStatistics(env)
+        if capture_video:
+            if idx == 0:
+                env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
+        env.seed(seed)
+        env.action_space.seed(seed)
+        env.observation_space.seed(seed)
+        return env
+    
+    return thunk
 
 def test_linear_schedule(linear_schedule):
     expected = t.tensor([solutions.linear_schedule(step, start_e=1.0, end_e=0.05, exploration_fraction=0.5, total_timesteps=500)
@@ -36,8 +58,10 @@ def test_replay_buffer_single(
     rb: solutions.ReplayBuffer = cls(buffer_size, num_actions, observation_shape, num_environments, seed)
     exp = _random_experience(num_actions, observation_shape, num_environments)
     rb.add(*exp)
+    print(t.tensor(exp[0]).type())
     for _ in range(10):
         actual = rb.sample(1, device)
+        print(actual.observations.type())
         t.testing.assert_close(actual.observations, t.tensor(exp[0]))
         t.testing.assert_close(actual.actions, t.tensor(exp[1]))
         t.testing.assert_close(actual.rewards, t.tensor(exp[2]))

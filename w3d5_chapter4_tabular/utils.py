@@ -8,7 +8,7 @@ import gym.envs.registration
 from gym.utils import seeding
 import matplotlib.pyplot as plt
 from tqdm import tqdm
-import solutions
+# import solutions
 from typing import Tuple
 from dataclasses import asdict
 

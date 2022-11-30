@@ -23,7 +23,22 @@ from numpy.random import Generator
 import gym.envs.registration
 import pandas as pd
 
-from w3d5_chapter4_tabular.utils import make_env
+def make_env(env_id: str, seed: int, idx: int, capture_video: bool, run_name: str):
+    """Return a function that returns an environment after setting up boilerplate."""
+    
+    def thunk():
+        env = gym.make(env_id)
+        env = gym.wrappers.RecordEpisodeStatistics(env)
+        if capture_video:
+            if idx == 0:
+                env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
+        env.seed(seed)
+        env.action_space.seed(seed)
+        env.observation_space.seed(seed)
+        return env
+    
+    return thunk
+
 from w4d2_chapter4_dqn import utils
 
 MAIN = __name__ == "__main__"
