@@ -5,8 +5,8 @@ from torch import nn
 from torch.distributions.categorical import Categorical
 Arr = np.ndarray
 
-from w4d3_chapter4_ppo.utils import make_env
-from w4d3_chapter4_ppo import solutions
+from utils import make_env
+import solutions
 
 def test_agent(Agent):
     envs = gym.vector.SyncVectorEnv([make_env("CartPole-v1", i, i, False, "test-run") for i in range(5)])

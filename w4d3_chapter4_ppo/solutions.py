@@ -16,7 +16,7 @@ from torch.utils.tensorboard import SummaryWriter
 from gym.spaces import Discrete
 from einops import rearrange
 
-from w4d3_chapter4_ppo.utils import make_env, ppo_parse_args
+from utils import make_env, ppo_parse_args
 
 device = t.device("cuda" if t.cuda.is_available() else "cpu")
 
