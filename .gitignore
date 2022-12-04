@@ -8,3 +8,19 @@
 *.pt
 
 w5_chapter5_modelling_objectives/celeba/img_align_celeba.zip
+
+data/FashionMNIST/raw/t10k-images-idx3-ubyte
+
+data/FashionMNIST/raw/t10k-images-idx3-ubyte.gz
+
+data/FashionMNIST/raw/t10k-labels-idx1-ubyte
+
+data/FashionMNIST/raw/t10k-labels-idx1-ubyte.gz
+
+data/FashionMNIST/raw/train-images-idx3-ubyte
+
+data/FashionMNIST/raw/train-images-idx3-ubyte.gz
+
+data/FashionMNIST/raw/train-labels-idx1-ubyte
+
+data/FashionMNIST/raw/train-labels-idx1-ubyte.gz
