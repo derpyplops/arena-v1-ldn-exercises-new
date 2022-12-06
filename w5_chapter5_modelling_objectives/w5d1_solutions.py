@@ -14,7 +14,7 @@ import wandb
 import time
 import sys
 
-p = r"C:\Users\calsm\Documents\AI Alignment\ARENA\arena-v1-ldn-exercises-restructured"
+p = r"/Users/jon/ml/arena/arena-v1-ldn-exercises-new"
 # Replace the line above with your own root directory
 os.chdir(p)
 sys.path.append(p)
@@ -428,6 +428,7 @@ if MAIN:
     trainloader = DataLoader(trainset, batch_size=batch_size, shuffle=True) # num_workers=2
 
     w5d1_utils.show_images(trainset, rows=3, cols=5)
+    print(f"trainloader: {trainloader}")
 
 # ======================== MNIST ========================
 
@@ -562,40 +563,40 @@ def get_generator_output(netG, n_examples=8, rand_seed=0):
 
 
 # %%
+if MAIN:
+    netG = Generator(**celeba_mini_config).to(device).train()
+    # print_param_count(netG)
+    x = t.randn(3, 100).to(device)
+    statsG = torchinfo.summary(netG, input_data=x)
+    print(statsG, "\n\n")
 
-netG = Generator(**celeba_mini_config).to(device).train()
-# print_param_count(netG)
-x = t.randn(3, 100).to(device)
-statsG = torchinfo.summary(netG, input_data=x)
-print(statsG, "\n\n")
+    netD = Discriminator(**celeba_mini_config).to(device).train()
+    # print_param_count(netD)
+    statsD = torchinfo.summary(netD, input_data=netG(x))
+    print(statsD)
 
-netD = Discriminator(**celeba_mini_config).to(device).train()
-# print_param_count(netD)
-statsD = torchinfo.summary(netD, input_data=netG(x))
-print(statsD)
+    initialize_weights(netG)
+    initialize_weights(netD)
 
-initialize_weights(netG)
-initialize_weights(netD)
+    lr = 0.0002
+    betas = (0.5, 0.999)
+    optG = t.optim.Adam(netG.parameters(), lr=lr, betas=betas)
+    optD = t.optim.Adam(netD.parameters(), lr=lr, betas=betas)
 
-lr = 0.0002
-betas = (0.5, 0.999)
-optG = t.optim.Adam(netG.parameters(), lr=lr, betas=betas)
-optD = t.optim.Adam(netD.parameters(), lr=lr, betas=betas)
+    epochs = 3
+    max_epoch_duration = 240
+    log_netG_output_interval = 10
 
-epochs = 3
-max_epoch_duration = 240
-log_netG_output_interval = 10
+    # %%
 
-# %%
-
-netG, netD = train_generator_discriminator(
-    netG, 
-    netD, 
-    optG, 
-    optD, 
-    trainloader,
-    epochs, 
-    max_epoch_duration, 
-    log_netG_output_interval
-)
+    netG, netD = train_generator_discriminator(
+        netG, 
+        netD, 
+        optG, 
+        optD, 
+        trainloader,
+        epochs, 
+        max_epoch_duration, 
+        log_netG_output_interval
+    )
 # %%
