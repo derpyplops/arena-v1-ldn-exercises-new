@@ -99,10 +99,6 @@ def test_find_optimal_policy(find_optimal_policy):
         val2 = policy_eval_exact(norvig, actual_pi_opt, gamma)
         t.testing.assert_close(t.tensor(val1), t.tensor(val2))
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 def make_env(env_id: str, seed: int, idx: int, capture_video: bool, run_name: str):
     """Return a function that returns an environment after setting up boilerplate."""
     
@@ -112,11 +108,7 @@ def make_env(env_id: str, seed: int, idx: int, capture_video: bool, run_name: st
         if capture_video:
             if idx == 0:
                 env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
-<<<<<<< HEAD
-        env.seed(seed)
-=======
         obs = env.reset(seed=seed)
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
         env.action_space.seed(seed)
         env.observation_space.seed(seed)
         return env

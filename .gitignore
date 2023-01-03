@@ -3,6 +3,7 @@
 *wandb/
 *videos/
 *runs/
+*celeba/
 .DS_Store
 
 *.pt

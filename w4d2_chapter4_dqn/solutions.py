@@ -5,10 +5,6 @@ os.environ["SDL_VIDEODRIVER"] = "dummy"
 os.environ["KMP_DUPLICATE_LIB_OK"]="TRUE"
 
 import sys
-<<<<<<< HEAD
-from pathlib import Path
-=======
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 import argparse
 import sys
 import random
@@ -27,42 +23,24 @@ import torch.optim as optim
 from einops import rearrange
 from gym.spaces import Discrete, Box
 from matplotlib import pyplot as plt
-<<<<<<< HEAD
-from torch.utils.tensorboard import SummaryWriter
-=======
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 from numpy.random import Generator
 import gym.envs.registration
 import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
-<<<<<<< HEAD
-
-def make_env(env_id: str, seed: int, idx: int, capture_video: bool, run_name: str):
-    """Return a function that returns an environment after setting up boilerplate."""
-    
-    def thunk():
-        env = gym.make(env_id)
-        env = gym.wrappers.RecordEpisodeStatistics(env)
-        if capture_video:
-            if idx == 0:
-                env = gym.wrappers.RecordVideo(env, f"videos/{run_name}")
-        env.seed(seed)
-        env.action_space.seed(seed)
-        env.observation_space.seed(seed)
-        return env
-    
-    return thunk
-
-from w4d2_chapter4_dqn import utils
-
-MAIN = __name__ == "__main__"
-TESTING = True
-=======
 import wandb
 import pandas as pd
 from IPython.display import display
 from tqdm import tqdm
+
+os.chdir(r"C:\Users\calsm\Documents\AI Alignment\ARENA\arena-v1-ldn-exercises-restructured")
+sys.path.append(r"C:\Users\calsm\Documents\AI Alignment\ARENA\arena-v1-ldn-exercises-restructured")
+
+from w3d5_chapter4_tabular.utils import make_env
+from w4d2_chapter4_dqn.utils import parse_args, plot_buffer_items
+from w4d2_chapter4_dqn import tests
+
+MAIN = __name__ == "__main__"
 
 os.chdir(r"C:\Users\calsm\Documents\AI Alignment\ARENA\arena-v1-ldn-exercises-restructured")
 sys.path.append(r"C:\Users\calsm\Documents\AI Alignment\ARENA\arena-v1-ldn-exercises-restructured")
@@ -91,11 +69,7 @@ class QNetwork(nn.Module):
     def forward(self, x: t.Tensor) -> t.Tensor:
         return self.layers(x)
 
-<<<<<<< HEAD
-if MAIN and TESTING:
-=======
 if MAIN:
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
     net = QNetwork(dim_observation=4, num_actions=2)
     n_params = sum((p.nelement() for p in net.parameters()))
     print(net)
@@ -172,18 +146,6 @@ class ReplayBuffer:
         samples = [t.as_tensor(arr_list[indices], device=device) for arr_list in self.buffer]
         return ReplayBufferSamples(*samples)
 
-<<<<<<< HEAD
-if MAIN and TESTING:
-    utils.test_replay_buffer_single(ReplayBuffer)
-    utils.test_replay_buffer_deterministic(ReplayBuffer)
-    utils.test_replay_buffer_wraparound(ReplayBuffer)
-
-# %%
-
-if MAIN and TESTING:
-    rb = ReplayBuffer(buffer_size=256, num_actions=2, observation_shape=(4,), num_environments=1, seed=0)
-    envs = gym.vector.SyncVectorEnv([utils.make_env("CartPole-v1", 0, 0, False, "test")])
-=======
 # if MAIN:
 #     tests.test_replay_buffer_single(ReplayBuffer)
 #     tests.test_replay_buffer_deterministic(ReplayBuffer)
@@ -194,7 +156,6 @@ if MAIN and TESTING:
 if MAIN:
     rb = ReplayBuffer(buffer_size=256, num_actions=2, observation_shape=(4,), num_environments=1, seed=0)
     envs = gym.vector.SyncVectorEnv([make_env("CartPole-v1", 0, 0, False, "test")])
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
     obs = envs.reset()
     for i in range(512):
         actions = np.array([0])
@@ -204,15 +165,9 @@ if MAIN:
     sample = rb.sample(128, t.device("cpu"))
     columns = ["cart_pos", "cart_v", "pole_angle", "pole_v"]
     df = pd.DataFrame(rb.observations, columns=columns)
-<<<<<<< HEAD
-    df.plot(subplots=True, title="Replay Buffer")
-    df2 = pd.DataFrame(sample.observations, columns=columns)
-    df2.plot(subplots=True, title="Shuffled Replay Buffer")
-=======
     plot_buffer_items(df, title="Replay Buffer")
     df2 = pd.DataFrame(sample.observations, columns=columns)
     plot_buffer_items(df2, title="Shuffled Replay Buffer")
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 # %%
 
 def linear_schedule(
@@ -227,31 +182,17 @@ def linear_schedule(
     return start_e + (end_e - start_e) * min(current_step / (exploration_fraction * total_timesteps), 1)
 
 
-<<<<<<< HEAD
-if MAIN and TESTING:
-=======
 if MAIN:
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
     epsilons = [
         linear_schedule(step, start_e=1.0, end_e=0.05, exploration_fraction=0.5, total_timesteps=500)
         for step in range(500)
     ]
-<<<<<<< HEAD
-    utils.test_linear_schedule(linear_schedule)
-    
-    px.line(
-        epsilons, title="Probability of random action", labels={"index": "steps", "value": "epsilon"}
-    ).update_layout(
-        showlegend=False
-    ).show()
-=======
     px.line(
         epsilons, 
         title="Probability of random action", 
         labels={"index": "steps", "value": "epsilon"},
         template="simple_white"
     ).update_layout(showlegend=False).show()
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 
 # %%
 
@@ -274,13 +215,8 @@ def epsilon_greedy_policy(
         q_scores = q_network(obs)
         return q_scores.argmax(-1).detach().cpu().numpy()
 
-<<<<<<< HEAD
-if MAIN and TESTING:
-    utils.test_epsilon_greedy_policy(epsilon_greedy_policy)
-=======
 # if MAIN:
 #     tests.test_epsilon_greedy_policy(epsilon_greedy_policy)
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 
 # %%
 
@@ -314,11 +250,7 @@ class Probe1(gym.Env):
         return np.array([0.0])
 
 gym.envs.registration.register(id="Probe1-v0", entry_point=Probe1)
-<<<<<<< HEAD
-if MAIN and TESTING:
-=======
 if MAIN:
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
     env = gym.make("Probe1-v0")
     assert env.observation_space.shape == (1,)
     assert env.action_space.shape == ()
@@ -457,17 +389,10 @@ class DQNArgs:
     seed: int = 1
     torch_deterministic: bool = True
     cuda: bool = True
-<<<<<<< HEAD
-    track: bool = False
-    wandb_project_name: str = "CartPoleDQN"
-    wandb_entity: Optional[str] = None
-    capture_video: bool = False
-=======
     track: bool = True
     wandb_project_name: str = "CartPoleDQN"
     wandb_entity: Optional[str] = None
     capture_video: bool = True
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
     env_id: str = "CartPole-v1"
     total_timesteps: int = 500000
     learning_rate: float = 0.00025
@@ -505,29 +430,6 @@ arg_help_strings = dict(
 )
 toggles = ["torch_deterministic", "cuda", "track", "capture_video"]
 
-<<<<<<< HEAD
-def parse_args(arg_help_strings=arg_help_strings, toggles=toggles) -> DQNArgs:
-    parser = argparse.ArgumentParser()
-    for (name, field) in DQNArgs.__dataclass_fields__.items():
-        flag = "--" + name.replace("_", "-")
-        type_function = field.type if field.type != bool else lambda x: bool(strtobool(x))
-        toggle_kwargs = {"nargs": "?", "const": True} if name in toggles else {}
-        parser.add_argument(
-            flag, type=type_function, default=field.default, help=arg_help_strings[name], **toggle_kwargs
-        )
-    return DQNArgs(**vars(parser.parse_args()))
-
-def setup(args: DQNArgs) -> Tuple[str, SummaryWriter, np.random.Generator, t.device, gym.vector.SyncVectorEnv]:
-    '''Helper function to set up useful variables for the DQN implementation'''
-    run_name = f"{args.env_id}__{args.exp_name}__{args.seed}__{int(time.time())}"
-    if args.track:
-        import wandb
-
-        wandb.init(
-            project=args.wandb_project_name,
-            entity=args.wandb_entity,
-            sync_tensorboard=True,
-=======
 def arg_help(args: Optional[DQNArgs]):
     """Prints out a nicely displayed list of arguments, their default values, and what they mean."""
     if args is None:
@@ -559,34 +461,17 @@ def setup(args: DQNArgs) -> Tuple[str, np.random.Generator, t.device, gym.vector
         wandb.init(
             project=args.wandb_project_name,
             entity=args.wandb_entity,
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
             config=vars(args),
             name=run_name,
             monitor_gym=True,
             save_code=True,
         )
-<<<<<<< HEAD
-    writer = SummaryWriter(f"runs/{run_name}")
-    writer.add_text(
-        "hyperparameters",
-        "|param|value|\n|-|-|\n%s" % "\n".join([f"|{key}|{value}|" for (key, value) in vars(args).items()]),
-    )
-=======
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
     random.seed(args.seed)
     np.random.seed(args.seed)
     torch.manual_seed(args.seed)
     torch.backends.cudnn.deterministic = args.torch_deterministic
     rng = np.random.default_rng(args.seed)
     device = torch.device("cuda" if torch.cuda.is_available() and args.cuda else "cpu")
-<<<<<<< HEAD
-    envs = gym.vector.SyncVectorEnv([utils.make_env(args.env_id, args.seed, 0, args.capture_video, run_name)])
-    assert isinstance(envs.single_action_space, Discrete), "only discrete action space is supported"
-    return (run_name, writer, rng, device, envs)
-
-def log(
-    writer: SummaryWriter,
-=======
     envs = gym.vector.SyncVectorEnv([make_env(args.env_id, args.seed, 0, args.capture_video, run_name)])
     assert isinstance(envs.single_action_space, Discrete), "only discrete action space is supported"
     arg_help(args)
@@ -594,30 +479,12 @@ def log(
 
 def log(
     args: DQNArgs,
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
     start_time: float,
     step: int,
     predicted_q_vals: t.Tensor,
     loss: Union[float, t.Tensor],
     infos: Iterable[dict],
     epsilon: float,
-<<<<<<< HEAD
-):
-    '''Helper function to write relevant info to TensorBoard logs, and print some things to stdout'''
-    if step % 100 == 0:
-        writer.add_scalar("losses/td_loss", loss, step)
-        writer.add_scalar("losses/q_values", predicted_q_vals.mean().item(), step)
-        writer.add_scalar("charts/SPS", int(step / (time.time() - start_time)), step)
-        if step % 10000 == 0:
-            print("SPS:", int(step / (time.time() - start_time)))
-    for info in infos:
-        if "episode" in info.keys():
-            print(f"global_step={step}, episodic_return={info['episode']['r']}")
-            writer.add_scalar("charts/episodic_return", info["episode"]["r"], step)
-            writer.add_scalar("charts/episodic_length", info["episode"]["l"], step)
-            writer.add_scalar("charts/epsilon", epsilon, step)
-            break
-=======
 ) -> float:
     '''Helper function to write relevant info to Weights and Biases (and return episodic length)'''
     log_dict = {}
@@ -630,16 +497,11 @@ def log(
                 wandb.log(log_dict, step=step)
             return info
     return {}
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 
 # %%
 
 def train_dqn(args: DQNArgs):
-<<<<<<< HEAD
-    (run_name, writer, rng, device, envs) = setup(args)
-=======
     (rng, device, envs) = setup(args)
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 
     "(1) YOUR CODE: Create your Q-network, Adam optimizer, and replay buffer here."
     num_actions = envs.single_action_space.n
@@ -655,12 +517,8 @@ def train_dqn(args: DQNArgs):
 
     start_time = time.time()
     obs = envs.reset()
-<<<<<<< HEAD
-    for step in range(args.total_timesteps):
-=======
     progress_bar = tqdm(range(args.total_timesteps))
     for step in progress_bar:
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 
         "(2) YOUR CODE: Sample actions according to the epsilon greedy policy using the linear schedule for epsilon, and then step the environment"
         epsilon = linear_schedule(step, args.start_e, args.end_e, args.exploration_fraction, args.total_timesteps)
@@ -674,10 +532,7 @@ def train_dqn(args: DQNArgs):
         if step > args.learning_starts and step % args.train_frequency == 0:
 
             "(3) YOUR CODE: Sample from the replay buffer, compute the TD target, compute TD loss, and perform an optimizer step."
-<<<<<<< HEAD
-=======
             "You can also update the progress bar description (optional)"
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
             data = rb.sample(args.batch_size, device)
             s, a, r, d, s_new = data.observations, data.actions, data.rewards, data.dones, data.next_observations
 
@@ -690,10 +545,6 @@ def train_dqn(args: DQNArgs):
             loss.backward()
             optimizer.step()
             optimizer.zero_grad()
-<<<<<<< HEAD
-            log(writer, start_time, step, predicted_q_vals, loss, infos, epsilon)
-        
-=======
             info = log(args, start_time, step, predicted_q_vals, loss, infos, epsilon)
             
             if len(info) > 0:
@@ -701,47 +552,11 @@ def train_dqn(args: DQNArgs):
                 desc = f"step = {step:<6}, loss = {loss.item():<5.4f}, episode length = {episode_length}"
                 progress_bar.set_description(desc)
 
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
         if step % args.target_network_frequency == 0:
             "(4) YOUR CODE: Copy weights to the target network"
             target_network.load_state_dict(q_network.state_dict())
 
     "If running one of the Probe environments, will test if the learned q-values are\n    sensible after training. Useful for debugging."
-<<<<<<< HEAD
-    if args.env_id == "Probe1-v0":
-        batch = t.tensor([[0.0]]).to(device)
-        value = q_network(batch)
-        print("Value: ", value)
-        expected = t.tensor([[1.0]]).to(device)
-        t.testing.assert_close(value, expected, atol=5e-4, rtol=0)
-    elif args.env_id == "Probe2-v0":
-        batch = t.tensor([[-1.0], [+1.0]]).to(device)
-        value = q_network(batch)
-        print("Value:", value)
-        expected = batch
-        t.testing.assert_close(value, expected, atol=5e-4, rtol=0)
-    elif args.env_id == "Probe3-v0":
-        batch = t.tensor([[0.0], [1.0]]).to(device)
-        value = q_network(batch)
-        print("Value: ", value)
-        expected = t.tensor([[args.gamma], [1.0]]).to(device)
-        t.testing.assert_close(value, expected, atol=5e-4, rtol=0)
-    elif args.env_id == "Probe4-v0":
-        batch = t.tensor([[0.0]]).to(device)
-        value = q_network(batch)
-        expected = t.tensor([[-1.0, 1.0]]).to(device)
-        print("Value: ", value)
-        t.testing.assert_close(value, expected, atol=5e-4, rtol=0)
-    elif args.env_id == "Probe5-v0":
-        batch = t.tensor([[0.0], [1.0]]).to(device)
-        value = q_network(batch)
-        expected = t.tensor([[1.0, -1.0], [-1.0, 1.0]]).to(device)
-        print("Value: ", value)
-        t.testing.assert_close(value, expected, atol=1e-3, rtol=0)
-
-    envs.close()
-    writer.close()
-=======
     obs_for_probes = [[[0.0]], [[-1.0], [+1.0]], [[0.0], [1.0]], [[0.0]], [[0.0], [1.0]]]
     expected_value_for_probes = [[[1.0]], [[-1.0], [+1.0]], [[args.gamma], [1.0]], [[-1.0, 1.0]], [[1.0, -1.0], [-1.0, 1.0]]]
     tolerances = [5e-4, 5e-4, 5e-4, 5e-4, 1e-3]
@@ -757,24 +572,17 @@ def train_dqn(args: DQNArgs):
     envs.close()
     if args.track:
         wandb.finish()
+
+    envs.close()
+    if args.track:
+        wandb.finish()
 >>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 
 # %%
 
 if MAIN:
-<<<<<<< HEAD
-    if "ipykernel_launcher" in os.path.basename(sys.argv[0]):
-        filename = globals().get("__file__", "<filename of this script>")
-        print(f"Try running this file from the command line instead: python {os.path.basename(filename)} --help")
-        args = DQNArgs()
-    else:
-        args = parse_args()
-    train_dqn(args)
-
-=======
     args = DQNArgs()
     # YOUR CODE HERE: change values of args if you want, using e.g. `args.track = False`
     args.track = False
     train_dqn(args)
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 # %%

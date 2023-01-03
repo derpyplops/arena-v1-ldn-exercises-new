@@ -139,7 +139,7 @@ class ParenTransformer(nn.Module):
         super().__init__()
         self.model_type = "Transformer"
         self.pos_encoder = PositionalEncoding(d_model, dropout)
-        self.layers: nn.ModuleList = nn.ModuleList(
+        self.layers = nn.ModuleList(
             [TransformerBlock(d_model, nhead, d_hid) for _ in range(nlayers)]
         )
         self.norm = nn.LayerNorm(d_model)

@@ -15,7 +15,7 @@ from dataclasses import dataclass
 import sys
 from torchvision import transforms, datasets
 
-p = r"/Users/jon/ml/arena/arena-v1-ldn-exercises-new"
+p = r"C:\Users\calsm\Documents\AI Alignment\ARENA\arena-v1-ldn-exercises-restructured"
 # Replace the line above with your own root directory
 os.chdir(p)
 sys.path.append(p)
@@ -412,7 +412,6 @@ if MAIN:
     )
 
     w5d1_utils.show_images(trainset, rows=3, cols=5)
-    print(f"trainloader: {trainloader}")
 
 # ======================== MNIST ========================
 
@@ -545,40 +544,21 @@ def get_generator_output(netG, n_examples=8, rand_seed=0):
     return arrays
 
 # %%
+
 if MAIN:
-    netG = Generator(**celeba_mini_config).to(device).train()
-    # print_param_count(netG)
+    model = DCGAN(**celeba_config).to(device).train()
+    # print_param_count(model)
     x = t.randn(3, 100).to(device)
-    statsG = torchinfo.summary(netG, input_data=x)
-    print(statsG, "\n\n")
+    statsG = torchinfo.summary(model.netG, input_data=x)
+    statsD = torchinfo.summary(model.netD, input_data=model.netG(x))
+    print(statsG, statsD)
 
-    netD = Discriminator(**celeba_mini_config).to(device).train()
-    # print_param_count(netD)
-    statsD = torchinfo.summary(netD, input_data=netG(x))
-    print(statsD)
+# %%
 
-    initialize_weights(netG)
-    initialize_weights(netD)
-
-    lr = 0.0002
-    betas = (0.5, 0.999)
-    optG = t.optim.Adam(netG.parameters(), lr=lr, betas=betas)
-    optD = t.optim.Adam(netD.parameters(), lr=lr, betas=betas)
-
-    epochs = 3
-    max_epoch_duration = 240
-    log_netG_output_interval = 10
-
-    # %%
-
-    netG, netD = train_generator_discriminator(
-        netG, 
-        netD, 
-        optG, 
-        optD, 
-        trainloader,
-        epochs, 
-        max_epoch_duration, 
-        log_netG_output_interval
-    )
+if MAIN:
+    args = DCGANargs(**celeba_mini_config, trainset=trainset)
+    args.seconds_between_image_logs = 30
+    model = train_DCGAN(args)
+    # arrays = get_generator_output(model.netG, n_examples=16)
+    # w5d1_utils.show_images(rearrange(t.from_numpy(arrays), "b h w c -> b c h w"), rows=2, cols=8)
 # %%

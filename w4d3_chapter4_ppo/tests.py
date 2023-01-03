@@ -5,10 +5,6 @@ from torch import nn
 from torch.distributions.categorical import Categorical
 Arr = np.ndarray
 
-<<<<<<< HEAD
-from utils import make_env
-import solutions
-=======
 import os, sys
 os.chdir(r"C:\Users\calsm\Documents\AI Alignment\ARENA\arena-v1-ldn-exercises-restructured")
 sys.path.append(r"C:\Users\calsm\Documents\AI Alignment\ARENA\arena-v1-ldn-exercises-restructured")
@@ -26,28 +22,6 @@ def test_agent(Agent):
         if "bias" in name:
             t.testing.assert_close(param.pow(2).sum(), t.tensor(0.0))
 
-<<<<<<< HEAD
-def test_compute_advantages(compute_advantages):
-
-    t_ = 4
-    env_ = 6
-    next_value = t.randn(1, env_)
-    next_done = t.randint(0, 2, (env_,))
-    rewards = t.randn(t_, env_)
-    values = t.randn(t_, env_)
-    dones = t.randn(t_, env_)
-    device = t.device("cpu")
-    gamma = 0.95
-    gae_lambda = 0.95
-    args = (next_value, next_done, rewards, values, dones, device, gamma, gae_lambda)
-    
-    actual = compute_advantages(*args)
-    expected = solutions.compute_advantages(*args)
-
-    t.testing.assert_close(actual, expected)
-
-def test_calc_policy_loss(calc_policy_loss):
-=======
 def test_compute_advantages_single(compute_advantages, dones_false, single_env):
     print("".join([
         "Testing with ",
@@ -81,7 +55,6 @@ def test_compute_advantages(compute_advantages):
     print("All tests in `test_compute_advantages_single` passed!")
 
 def test_calc_clipped_surrogate_objective(calc_clipped_surrogate_objective):
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 
     minibatch = 3
     num_actions = 4
@@ -90,21 +63,12 @@ def test_calc_clipped_surrogate_objective(calc_clipped_surrogate_objective):
     mb_advantages = t.randn((minibatch,))
     mb_logprobs = t.randn((minibatch,))
     clip_coef = 0.01
-<<<<<<< HEAD
-    expected = solutions.calc_policy_loss(probs, mb_action, mb_advantages, mb_logprobs, clip_coef)
-    actual = calc_policy_loss(probs, mb_action, mb_advantages, mb_logprobs, clip_coef)
-    t.testing.assert_close(actual.pow(2), expected.pow(2))
-    if actual * expected < 0:
-        print("Warning: you have calculated the negative of the policy loss, suitable for gradient descent.")
-    print("All tests in `test_calc_policy_loss` passed.")
-=======
     expected = solutions.calc_clipped_surrogate_objective(probs, mb_action, mb_advantages, mb_logprobs, clip_coef)
     actual = calc_clipped_surrogate_objective(probs, mb_action, mb_advantages, mb_logprobs, clip_coef)
     t.testing.assert_close(actual.pow(2), expected.pow(2))
     if actual * expected < 0:
         print("Warning: you have calculated the negative of the policy loss, suitable for gradient descent.")
     print("All tests in `test_calc_clipped_surrogate_objective` passed.")
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
 
 def test_calc_value_function_loss(calc_value_function_loss):
     critic = nn.Sequential(nn.Linear(3, 4), nn.ReLU())
@@ -120,19 +84,11 @@ def test_calc_value_function_loss(calc_value_function_loss):
         raise Exception("Your result was half the expected value. Did you forget to use a factor of 1/2 in the mean squared difference?")
     t.testing.assert_close(actual, expected)
 
-<<<<<<< HEAD
-def test_calc_entropy_loss(calc_entropy_loss):
-    probs = Categorical(logits=t.randn((3, 4)))
-    ent_coef = 0.5
-    expected = ent_coef * probs.entropy().mean()
-    actual = calc_entropy_loss(probs, ent_coef)
-=======
 def test_calc_entropy_bonus(calc_entropy_bonus):
     probs = Categorical(logits=t.randn((3, 4)))
     ent_coef = 0.5
     expected = ent_coef * probs.entropy().mean()
     actual = calc_entropy_bonus(probs, ent_coef)
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
     t.testing.assert_close(expected, actual)
 
 def test_minibatch_indexes(minibatch_indexes):
@@ -140,11 +96,7 @@ def test_minibatch_indexes(minibatch_indexes):
         frac, minibatch_size = np.random.randint(1, 8, size=(2,))
         batch_size = frac * minibatch_size
         indices = minibatch_indexes(batch_size, minibatch_size)
-<<<<<<< HEAD
-        assert isinstance(indices, list)
-=======
         assert any([isinstance(indices, list), isinstance(indices, np.ndarray)])
->>>>>>> 048f2ffb9 (make RL changes, and prereqs)
         assert isinstance(indices[0], np.ndarray)
         assert len(indices) == frac
         np.testing.assert_equal(np.sort(np.stack(indices).flatten()), np.arange(batch_size))
